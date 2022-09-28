@@ -44,11 +44,11 @@ $ composer require charcoal/contrib-sitemap
 #### Required
 
 -   **[PHP 5.6+](https://php.net)**: _PHP 7_ is recommended.
--   **[charcoal/app][charcoal-app]**: ^0.8
--   **[charcoal/core][charcoal-core]**: ^0.3
--   **[charcoal/factory][charcoal-factory]**: ^0.4
--   **[charcoal/object][charcoal-object]**: ^0.4
--   **[charcoal/translator][charcoal-translator]**: ^0.3
+-   **[charcoal/app][charcoal-app]**: ^4.0
+-   **[charcoal/core][charcoal-core]**: ^4.0
+-   **[charcoal/factory][charcoal-factory]**: ^4.0
+-   **[charcoal/object][charcoal-object]**: ^4.0
+-   **[charcoal/translator][charcoal-translator]**: ^4.0
 
 
 
@@ -329,12 +329,12 @@ Charcoal is licensed under the MIT license. See [LICENSE](LICENSE) for details.
 
 
 
-[contrib-sitemap]:  https://packagist.org/packages/charcoal/contrib-sitemap
-[app]:              https://packagist.org/packages/charcoal/app
-[core]:             https://packagist.org/packages/charcoal/core
-[factory]:          https://packagist.org/packages/charcoal/factory
-[object]:           https://packagist.org/packages/charcoal/object
-[translator]:       https://packagist.org/packages/charcoal/translator
+[charcoal/contrib-sitemap]:  https://packagist.org/packages/charcoal/contrib-sitemap
+[charcoal/app]:              https://packagist.org/packages/charcoal/app
+[charcoal/core]:             https://packagist.org/packages/charcoal/core
+[charcoal/factory]:          https://packagist.org/packages/charcoal/factory
+[charcoal/object]:           https://packagist.org/packages/charcoal/object
+[charcoal/translator]:       https://packagist.org/packages/charcoal/translator
 
 [dev-scrutinizer]:    https://scrutinizer-ci.com/g/charcoal/contrib-sitemap/
 [dev-coveralls]:      https://coveralls.io/r/charcoal/contrib-sitemap
