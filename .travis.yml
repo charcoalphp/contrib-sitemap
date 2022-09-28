@@ -12,8 +12,8 @@ php:
 env:
     global:
         # GH_TOKEN define in repository settings on travis-ci.org
-        - GH_REPO: github.com/locomotivemtl/charcoal-contrib-sitemap.git
-        - GH_PAGES: locomotivemtl.github.io/charcoal-contrib-sitemap
+        - GH_REPO: github.com/charcoalphp/contrib-sitemap.git
+        - GH_PAGES: charcoalphp.github.io/contrib-sitemap
 
 matrix:
     allow_failures:

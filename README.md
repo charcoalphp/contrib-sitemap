@@ -34,7 +34,7 @@ A [Charcoal][charcoal-app] service for generating a sitemap.
 The preferred (and only supported) method is with Composer:
 
 ```shell
-$ composer require locomotivemtl/charcoal-contrib-sitemap
+$ composer require charcoal/contrib-sitemap
 ```
 
 
@@ -44,11 +44,11 @@ $ composer require locomotivemtl/charcoal-contrib-sitemap
 #### Required
 
 -   **[PHP 5.6+](https://php.net)**: _PHP 7_ is recommended.
--   **[locomotivemtl/charcoal-app][charcoal-app]**: ^0.8
--   **[locomotivemtl/charcoal-core][charcoal-core]**: ^0.3
--   **[locomotivemtl/charcoal-factory][charcoal-factory]**: ^0.4
--   **[locomotivemtl/charcoal-object][charcoal-object]**: ^0.4
--   **[locomotivemtl/charcoal-translator][charcoal-translator]**: ^0.3
+-   **[charcoal/app][charcoal-app]**: ^0.8
+-   **[charcoal/core][charcoal-core]**: ^0.3
+-   **[charcoal/factory][charcoal-factory]**: ^0.4
+-   **[charcoal/object][charcoal-object]**: ^0.4
+-   **[charcoal/translator][charcoal-translator]**: ^0.3
 
 
 
@@ -289,9 +289,9 @@ $ composer test
 ### API Documentation
 
 -   The auto-generated `phpDocumentor` API documentation is available at:  
-    [https://locomotivemtl.github.io/charcoal-contrib-sitemap/docs/master/](https://locomotivemtl.github.io/charcoal-contrib-sitemap/docs/master/)
+    [https://charcoalphp.github.io/contrib-sitemap/docs/master/](https://charcoalphp.github.io/contrib-sitemap/docs/master/)
 -   The auto-generated `apigen` API documentation is available at:  
-    [https://codedoc.pub/locomotivemtl/charcoal-contrib-sitemap/master/](https://codedoc.pub/locomotivemtl/charcoal-contrib-sitemap/master/index.html)
+    [https://codedoc.pub/charcoal/contrib-sitemap/master/](https://codedoc.pub/charcoal/contrib-sitemap/master/index.html)
 
 
 
@@ -305,7 +305,7 @@ $ composer test
 
 ### Coding Style
 
-The charcoal-contrib-sitemap module follows the Charcoal coding-style:
+The contrib-sitemap module follows the Charcoal coding-style:
 
 -   [_PSR-1_][psr-1]
 -   [_PSR-2_][psr-2]
@@ -329,22 +329,22 @@ Charcoal is licensed under the MIT license. See [LICENSE](LICENSE) for details.
 
 
 
-[charcoal-contrib-sitemap]:  https://packagist.org/packages/locomotivemtl/charcoal-contrib-sitemap
-[charcoal-app]:              https://packagist.org/packages/locomotivemtl/charcoal-app
-[charcoal-core]:             https://packagist.org/packages/locomotivemtl/charcoal-core
-[charcoal-factory]:          https://packagist.org/packages/locomotivemtl/charcoal-factory
-[charcoal-object]:           https://packagist.org/packages/locomotivemtl/charcoal-object
-[charcoal-translator]:       https://packagist.org/packages/locomotivemtl/charcoal-translator
+[contrib-sitemap]:  https://packagist.org/packages/charcoal/contrib-sitemap
+[app]:              https://packagist.org/packages/charcoal/app
+[core]:             https://packagist.org/packages/charcoal/core
+[factory]:          https://packagist.org/packages/charcoal/factory
+[object]:           https://packagist.org/packages/charcoal/object
+[translator]:       https://packagist.org/packages/charcoal/translator
 
-[dev-scrutinizer]:    https://scrutinizer-ci.com/g/locomotivemtl/charcoal-contrib-sitemap/
-[dev-coveralls]:      https://coveralls.io/r/locomotivemtl/charcoal-contrib-sitemap
-[dev-travis]:         https://app.travis-ci.com/github/locomotivemtl/charcoal-contrib-sitemap
+[dev-scrutinizer]:    https://scrutinizer-ci.com/g/charcoal/contrib-sitemap/
+[dev-coveralls]:      https://coveralls.io/r/charcoal/contrib-sitemap
+[dev-travis]:         https://app.travis-ci.com/github/charcoalphp/contrib-sitemap
 
-[badge-license]:      https://img.shields.io/packagist/l/locomotivemtl/charcoal-contrib-sitemap.svg?style=flat-square
-[badge-version]:      https://img.shields.io/packagist/v/locomotivemtl/charcoal-contrib-sitemap.svg?style=flat-square
-[badge-scrutinizer]:  https://img.shields.io/scrutinizer/g/locomotivemtl/charcoal-contrib-sitemap.svg?style=flat-square
-[badge-coveralls]:    https://img.shields.io/coveralls/locomotivemtl/charcoal-contrib-sitemap.svg?style=flat-square
-[badge-travis]:       https://img.shields.io/travis/com/locomotivemtl/charcoal-contrib-sitemap.svg?style=flat-square
+[badge-license]:      https://img.shields.io/packagist/l/charcoal/contrib-sitemap.svg?style=flat-square
+[badge-version]:      https://img.shields.io/packagist/v/charcoal/contrib-sitemap.svg?style=flat-square
+[badge-scrutinizer]:  https://img.shields.io/scrutinizer/g/charcoal/contrib-sitemap.svg?style=flat-square
+[badge-coveralls]:    https://img.shields.io/coveralls/charcoal/contrib-sitemap.svg?style=flat-square
+[badge-travis]:       https://img.shields.io/travis/com/charcoal/contrib-sitemap.svg?style=flat-square
 
 [psr-1]:  https://www.php-fig.org/psr/psr-1/
 [psr-2]:  https://www.php-fig.org/psr/psr-2/
