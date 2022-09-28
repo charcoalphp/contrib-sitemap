@@ -1,8 +1,8 @@
 Charcoal Sitemap
 ===============
 
-[![License][badge-license]][charcoal-contrib-sitemap]
-[![Latest Stable Version][badge-version]][charcoal-contrib-sitemap]
+[![License][badge-license]][charcoal/contrib-sitemap]
+[![Latest Stable Version][badge-version]][charcoal/contrib-sitemap]
 [![Code Quality][badge-scrutinizer]][dev-scrutinizer]
 [![Coverage Status][badge-coveralls]][dev-coveralls]
 [![Build Status][badge-travis]][dev-travis]
@@ -44,11 +44,11 @@ $ composer require charcoal/contrib-sitemap
 #### Required
 
 -   **[PHP 5.6+](https://php.net)**: _PHP 7_ is recommended.
--   **[charcoal/app][charcoal-app]**: ^4.0
--   **[charcoal/core][charcoal-core]**: ^4.0
--   **[charcoal/factory][charcoal-factory]**: ^4.0
--   **[charcoal/object][charcoal-object]**: ^4.0
--   **[charcoal/translator][charcoal-translator]**: ^4.0
+-   **[charcoal/app][charcoal/app]**: ^4.0
+-   **[charcoal/core][charcoal/core]**: ^4.0
+-   **[charcoal/factory][charcoal/factory]**: ^4.0
+-   **[charcoal/object][charcoal/object]**: ^4.0
+-   **[charcoal/translator][charcoal/translator]**: ^4.0
 
 
 
