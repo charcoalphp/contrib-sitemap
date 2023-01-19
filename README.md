@@ -7,7 +7,7 @@ Charcoal Sitemap
 [![Coverage Status][badge-coveralls]][dev-coveralls]
 [![Build Status][badge-travis]][dev-travis]
 
-A [Charcoal][charcoal-app] service for generating a sitemap.
+A [Charcoal][charcoal/charcoal] service for generating a sitemap.
 
 
 
@@ -43,12 +43,12 @@ $ composer require charcoal/contrib-sitemap
 
 #### Required
 
--   **[PHP 5.6+](https://php.net)**: _PHP 7_ is recommended.
--   **[charcoal/app][charcoal/app]**: ^4.0
--   **[charcoal/core][charcoal/core]**: ^4.0
--   **[charcoal/factory][charcoal/factory]**: ^4.0
--   **[charcoal/object][charcoal/object]**: ^4.0
--   **[charcoal/translator][charcoal/translator]**: ^4.0
+-   **[PHP 5.6+](https://php.net)**: _PHP 7_ is recommended.
+-   **[charcoal/app]**: ^4.0
+-   **[charcoal/core]**: ^4.0
+-   **[charcoal/factory]**: ^4.0
+-   **[charcoal/object]**: ^4.0
+-   **[charcoal/translator]**: ^4.0
 
 
 
@@ -319,7 +319,7 @@ $ composer test
 
 ### Coding Style
 
-The contrib-sitemap module follows the Charcoal coding-style:
+The charcoal/contrib-sitemap module follows the Charcoal coding-style:
 
 -   [_PSR-1_][psr-1]
 -   [_PSR-2_][psr-2]
@@ -345,6 +345,7 @@ Charcoal is licensed under the MIT license. See [LICENSE](LICENSE) for details.
 
 [charcoal/contrib-sitemap]:  https://packagist.org/packages/charcoal/contrib-sitemap
 [charcoal/app]:              https://packagist.org/packages/charcoal/app
+[charcoal/charcoal]:         https://packagist.org/packages/charcoal/charcoal
 [charcoal/core]:             https://packagist.org/packages/charcoal/core
 [charcoal/factory]:          https://packagist.org/packages/charcoal/factory
 [charcoal/object]:           https://packagist.org/packages/charcoal/object

@@ -3,9 +3,10 @@
     "name": "charcoal/contrib-sitemap",
     "description": "Charcoal service for generating a sitemap.",
     "keywords": [
-        "charcoal"
+        "charcoal",
+        "sitemap"
     ],
-    "homepage": "https://locomotivemtl.github.io/charcoal-contrib-sitemap/",
+    "homepage": "https://charcoalphp.github.io/contrib-sitemap/",
     "license": "MIT",
     "authors": [
         {
