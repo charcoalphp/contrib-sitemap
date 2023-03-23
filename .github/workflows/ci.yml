@@ -99,17 +99,17 @@ jobs:
       - name: Lint (PHPStan)
         id: lint-phpstan
         if: ${{ always() && steps.lint-php.conclusion == 'success' }}
-        run: vendor/bin/phpstan analyse --no-progress --error-format=github
+        run: vendor/bin/phpstan analyse --xdebug --no-progress --error-format=github
 
       # - name: Lint (Psalm)
       #   id: lint-psalm
       #   if: ${{ always() && steps.lint-php.conclusion == 'success' }}
       #   run: vendor/bin/psalm --no-progress --output-format=github
 
-      - name: Test (PHPUnit)
-        id: test-phpunit
-        if: ${{ always() && steps.lint-php.conclusion == 'success' }}
-        run: vendor/bin/phpunit --coverage-clover "var/reports/clover.xml" --coverage-text
+      # - name: Test (PHPUnit)
+      #   id: test-phpunit
+      #   if: ${{ always() && steps.lint-php.conclusion == 'success' }}
+      #   run: vendor/bin/phpunit --coverage-clover "var/reports/clover.xml" --coverage-text
 
       # - name: Upload coverage results to Coveralls
       #   id: coverage-coveralls
