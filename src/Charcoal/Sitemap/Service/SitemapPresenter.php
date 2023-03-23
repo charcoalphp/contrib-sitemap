@@ -36,9 +36,10 @@ class SitemapPresenter
     protected $cacheFacade;
 
     /**
-     * @param array|Traversable|callable $transformer   The data-view transformation array (or Traversable) object.
-     * @param string                     $getterPattern The string pattern to match string with. Must have a single
-     *                                                  catch-block.
+     * @param FactoryInterface $transformerFactory The transformer factory.
+     * @param CachePoolFacade  $cacheFacade        The cache helper.
+     * @param string           $getterPattern      The string pattern to match string with.
+     *                                             Must have a single catch-block.
      */
     public function __construct($transformerFactory, $cacheFacade, $getterPattern = '~{{(\w*?)}}~')
     {
@@ -181,7 +182,7 @@ class SitemapPresenter
 
     /**
      * @param FactoryInterface $transformerFactory
-     * @return Presenter
+     * @return self
      */
     public function setTransformerFactory(FactoryInterface $transformerFactory)
     {
@@ -199,7 +200,7 @@ class SitemapPresenter
 
     /**
      * @param mixed $cacheFacade
-     * @return Presenter
+     * @return self
      */
     protected function setCacheFacade($cacheFacade)
     {

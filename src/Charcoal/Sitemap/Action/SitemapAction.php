@@ -3,6 +3,7 @@
 namespace Charcoal\Sitemap\Action;
 
 use Charcoal\App\Action\AbstractAction;
+use Charcoal\Sitemap\Service\Builder;
 use Pimple\Container;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -24,6 +25,13 @@ class SitemapAction extends AbstractAction
      * @var string|null
      */
     protected $sitemapXml;
+
+    /**
+     * The sitemap builder.
+     *
+     * @var Builder|null
+     */
+    protected $sitemapBuilder;
 
     /**
      * Inject dependencies from a DI Container.

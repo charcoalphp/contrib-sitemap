@@ -13,8 +13,8 @@ class RoutableTransformer
     public function __invoke(ModelInterface $model)
     {
         return [
-            'url' => (string)$model->url(),
-            'title' => (string)$model['title']
+            'url'   => (string)$model['url'],
+            'title' => (string)$model['title'],
         ];
     }
 }

@@ -47,7 +47,7 @@ class Builder
     /**
      * Store the factory instance.
      *
-     * @var FactoryInterface
+     * @var CollectionLoader
      */
     private $collectionLoader;
 
@@ -86,8 +86,6 @@ class Builder
         $this->setCollectionLoader($data['model/collection/loader']);
         $this->setTranslator($data['translator']);
         $this->setSitemapPresenter($data['sitemap/presenter']);
-
-        return $this;
     }
 
     /**

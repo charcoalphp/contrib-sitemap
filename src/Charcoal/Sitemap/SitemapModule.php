@@ -19,6 +19,7 @@ class SitemapModule extends AbstractModule
      */
     public function setup()
     {
+        /** @var \Pimple\Container $container */
         $container = $this->app()->getContainer();
 
         $this->setupPublicRoutes();
