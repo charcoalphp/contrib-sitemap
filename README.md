@@ -1,11 +1,13 @@
 Charcoal Sitemap
-===============
+================
 
-[![License][badge-license]][charcoal/contrib-sitemap]
-[![Latest Stable Version][badge-version]][charcoal/contrib-sitemap]
-[![Code Quality][badge-scrutinizer]][dev-scrutinizer]
-[![Coverage Status][badge-coveralls]][dev-coveralls]
-[![Build Status][badge-travis]][dev-travis]
+
+[![License][badge-license]](LICENSE)
+[![Build Status][badge-github]][github-actions]
+[![Latest Release][badge-release]][github-latest]
+[![Supported PHP Version][badge-php]](composer.json)
+
+
 
 A [Charcoal][charcoal/charcoal] service for generating a sitemap.
 
@@ -43,7 +45,7 @@ $ composer require charcoal/contrib-sitemap
 
 #### Required
 
--   **[PHP 5.6+](https://php.net)**: _PHP 7_ is recommended.
+-   **[PHP 7.4+](https://php.net)**: _PHP 8_ is recommended.
 -   **[charcoal/app]**: ^4.0
 -   **[charcoal/core]**: ^4.0
 -   **[charcoal/factory]**: ^4.0
@@ -292,9 +294,10 @@ To install the development environment:
 $ composer install
 ```
 
-To run the scripts (phplint, phpcs, and phpunit):
+To run the scripts (PHP lint, PHPCS, PHPStan, and PHPUnit):
 
 ```shell
+$ composer lint
 $ composer test
 ```
 
@@ -351,15 +354,13 @@ Charcoal is licensed under the MIT license. See [LICENSE](LICENSE) for details.
 [charcoal/object]:           https://packagist.org/packages/charcoal/object
 [charcoal/translator]:       https://packagist.org/packages/charcoal/translator
 
-[dev-scrutinizer]:    https://scrutinizer-ci.com/g/charcoal/contrib-sitemap/
-[dev-coveralls]:      https://coveralls.io/r/charcoal/contrib-sitemap
-[dev-travis]:         https://app.travis-ci.com/github/charcoalphp/contrib-sitemap
+[badge-github]:    https://img.shields.io/github/actions/workflow/status/charcoalphp/contrib-sitemap/ci.yml?branch=main
+[badge-license]:   https://poser.pugx.org/charcoal/contrib-sitemap/license
+[badge-php]:       https://img.shields.io/packagist/php-v/charcoal/charcoal?style=flat-square&logo=php
+[badge-release]:   https://img.shields.io/github/tag/charcoalphp/contrib-sitemap.svg
 
-[badge-license]:      https://img.shields.io/packagist/l/charcoal/contrib-sitemap.svg?style=flat-square
-[badge-version]:      https://img.shields.io/packagist/v/charcoal/contrib-sitemap.svg?style=flat-square
-[badge-scrutinizer]:  https://img.shields.io/scrutinizer/g/charcoal/contrib-sitemap.svg?style=flat-square
-[badge-coveralls]:    https://img.shields.io/coveralls/charcoal/contrib-sitemap.svg?style=flat-square
-[badge-travis]:       https://img.shields.io/travis/com/charcoal/contrib-sitemap.svg?style=flat-square
+[github-actions]:  https://github.com/charcoalphp/contrib-sitemap/actions
+[github-latest]:   https://github.com/charcoalphp/contrib-sitemap/releases/latest
 
 [psr-1]:  https://www.php-fig.org/psr/psr-1/
 [psr-2]:  https://www.php-fig.org/psr/psr-2/
