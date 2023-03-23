@@ -48,16 +48,21 @@
         "locomotivemtl/charcoal-contrib-sitemap": "*"
     },
     "scripts": {
+        "fix": [
+            "@fix:phpcbf"
+        ],
+        "lint": [
+            "@lint:json",
+            "@lint:php",
+            "@lint:phpcs"
+        ],
         "test": [
-            "@tests"
+            "@test:phpunit"
         ],
-        "tests": [
-            "@phplint",
-            "@phpcs"
-        ],
-        "phplint": "find {src,tests} -name '*.php' -print0 | xargs -0 -n1 -P8 php -l | grep -v '^No syntax errors detected'; test $? -eq 1",
-        "phpcs": "php vendor/bin/phpcs -ps --colors src/ tests/",
-        "phpcbf": "php vendor/bin/phpcbf -ps --colors src/ tests/",
-        "phpunit": "php vendor/bin/phpunit --coverage-text"
+        "fix:phpcbf": "phpcbf -ps --colors src/",
+        "lint:json": "find {config,metadata} -type f -iname '*.json' -print0 2> /dev/null | xargs -0 jsonlint -q",
+        "lint:php": "find {src,tests} -type f -iname '*.php' -print0 2> /dev/null | xargs -0 -n1 -P8 php -l 2> /dev/null | grep -v '^No syntax errors detected'; test $? -eq 1",
+        "lint:phpcs": "phpcs -ps --colors src/",
+        "test:phpunit": "phpunit --coverage-text"
     }
 }
