@@ -41,8 +41,6 @@ class SitemapServiceProvider implements ServiceProviderInterface
             return $builder;
         };
 
-
-
         /**
          * @param Container $container
          * @return GenericPresenter

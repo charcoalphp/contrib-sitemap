@@ -83,18 +83,21 @@ class SitemapAction extends AbstractAction
         ];
 
         $xsiNs = [
-            'schemaLocation' => 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd',
+            'schemaLocation' => implode(' ', [
+                'http://www.sitemaps.org/schemas/sitemap/0.9',
+                'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd',
+            ]),
         ];
 
         $xhtmlNs = 'http://www.w3.org/1999/xhtml';
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'
-              .'<urlset'
-              .' xmlns="'.$xmlNs['xmlns'].'"'
-              .' xmlns:xhtml="'.$xmlNs['xhtml'].'"'
-              .' xmlns:xsi="'.$xmlNs['xsi'].'"'
-              .' xsi:schemaLocation="'.$xsiNs['schemaLocation'].'"'
-              .'/>';
+              . '<urlset'
+              . ' xmlns="' . $xmlNs['xmlns'] . '"'
+              . ' xmlns:xhtml="' . $xmlNs['xhtml'] . '"'
+              . ' xmlns:xsi="' . $xmlNs['xsi'] . '"'
+              . ' xsi:schemaLocation="' . $xsiNs['schemaLocation'] . '"'
+              . '/>';
 
         $urlsetEl = new SimpleXmlElement($xml);
 
@@ -102,7 +105,7 @@ class SitemapAction extends AbstractAction
             foreach ($objs as $obj) {
                 $objUrl = ltrim($obj['url'], '/');
                 if (parse_url($objUrl, PHP_URL_HOST) === null) {
-                    $objUrl = $this->baseUrl.$objUrl;
+                    $objUrl = $this->baseUrl . $objUrl;
                 }
 
                 if ($this->isValidUriHost($objUrl)) {
@@ -124,7 +127,7 @@ class SitemapAction extends AbstractAction
                     foreach ($obj['alternates'] as $alt) {
                         $altUrl = ltrim($alt['url'], '/');
                         if (parse_url($altUrl, PHP_URL_HOST) === null) {
-                            $altUrl = $this->baseUrl.$altUrl;
+                            $altUrl = $this->baseUrl . $altUrl;
                         }
 
                         if ($this->isValidUriHost($altUrl)) {

@@ -258,7 +258,6 @@ class Builder
             : [ $defaultLocale ];
 
         foreach ($availableLocales as $locale) {
-
             // Get opposite languages locales
             $oppositeLang = [];
             foreach ($availableLocales as $l) {

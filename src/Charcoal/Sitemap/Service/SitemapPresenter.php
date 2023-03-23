@@ -67,10 +67,12 @@ class SitemapPresenter
 
         $that = $this;
 
-        return $this->getCacheFacade()->get($key,
+        return $this->getCacheFacade()->get(
+            $key,
             function () use ($obj, $transformer, $that) {
                 return $that->transmogrify($obj, $transformer($obj));
-            });
+            }
+        );
     }
 
     /**
@@ -160,7 +162,9 @@ class SitemapPresenter
             return $obj->{$propertyName};
         }
 
-        if (is_string($propertyName) && (is_array($obj) || $obj instanceof ArrayAccess) && (isset($obj[$propertyName]))) {
+        if (is_string($propertyName) &&
+            (is_array($obj) || $obj instanceof ArrayAccess) &&
+            isset($obj[$propertyName])) {
             return $obj[$propertyName];
         }
 
