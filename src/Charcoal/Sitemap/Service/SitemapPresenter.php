@@ -49,8 +49,8 @@ class SitemapPresenter
     }
 
     /**
-     * @param  mixed       $obj         The model or value object.
-     * @param  string|null $transformer The specific transformer to use.
+     * @param  mixed              $obj         The model or value object.
+     * @param  object|string|null $transformer The specific transformer to use.
      * @return array Normalized data, suitable as presentation (view) layer
      */
     public function transform($obj, $transformer = null)

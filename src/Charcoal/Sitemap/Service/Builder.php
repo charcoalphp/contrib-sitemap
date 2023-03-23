@@ -9,7 +9,6 @@ use Charcoal\Translator\TranslatorAwareTrait;
 use Charcoal\View\ViewableInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
-use RuntimeException;
 use Slim\Http\Uri;
 
 /**
@@ -384,18 +383,10 @@ class Builder
     /**
      * Retrieve the model factory.
      *
-     * @throws RuntimeException If the model factory is missing.
      * @return FactoryInterface
      */
     public function modelFactory()
     {
-        if (!isset($this->modelFactory)) {
-            throw new RuntimeException(sprintf(
-                'Model Factory is not defined for [%s]',
-                get_class($this)
-            ));
-        }
-
         return $this->modelFactory;
     }
 
@@ -413,18 +404,10 @@ class Builder
     /**
      * Retrieve the model collection loader.
      *
-     * @throws RuntimeException If the collection loader is missing.
      * @return CollectionLoader
      */
     public function collectionLoader()
     {
-        if (!isset($this->collectionLoader)) {
-            throw new RuntimeException(sprintf(
-                'Collection Loader is not defined for [%s]',
-                get_class($this)
-            ));
-        }
-
         return $this->collectionLoader;
     }
 

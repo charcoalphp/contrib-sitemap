@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Return type \\(string\\|null\\) of method Charcoal\\\\Sitemap\\\\Action\\\\SitemapAction\\:\\:results\\(\\) should be compatible with return type \\(array\\) of method Charcoal\\\\App\\\\Action\\\\ActionInterface\\:\\:results\\(\\)$#"
+			count: 1
+			path: src/Charcoal/Sitemap/Action/SitemapAction.php
