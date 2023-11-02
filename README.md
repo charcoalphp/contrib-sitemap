@@ -79,6 +79,8 @@ which can be changed via the `sitemap_ident` controller setting.
 
 * **`charcoal/sitemap/builder`** — Instance of `Charcoal\Sitemap\Service\Builder`.  
   Used to generate the collections of links from the configured models.
+* **`sitemap/formatter/xml`** — Instance of `Charcoal\Sitemap\Service\XmlFormatter`.  
+  Used to generate the XML from one or more collections of links from the `Builder`.
 * **`sitemap/presenter`** — Instance of `Charcoal\Sitemap\Service\SitemapPresenter`.  
   Used to resolve model transformations.
 * **`sitemap/transformer/factory`** — Instance of `Charcoal\Factory\GenericFactory`
@@ -284,12 +286,26 @@ Given the settings above:
 
 ```php
 $builder = $container['charcoal/sitemap/builder'];
-$sitemap = $builder->build('footer_sitemap'); // footer_sitemap is the ident of the settings you want.
+// 'footer_sitemap' is the ident of the settings you want.
+$links = $builder->build('footer_sitemap');
 ```
 
 You can also use the `SitemapBuilderAwareTrait`, which includes the setter and
 getter for the sitemap builder, in order to use it with minimal code in every
 necessary class.
+
+### XML Formatter
+
+The XML formatter generates a valid XML sitemap from the array returned
+by the builder.
+
+```php
+$builder = $container['charcoal/sitemap/builder'];
+$links   = $builder->build('footer_sitemap');
+
+$formatter = $container['sitemap/formatter/xml'];
+$sitemap   = $formatter->createXmlFromCollections($links);
+```
 
 ## Development
 
