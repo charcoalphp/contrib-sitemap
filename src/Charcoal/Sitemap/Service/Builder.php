@@ -76,26 +76,29 @@ class Builder
     /**
      * Create the Sitemap Builder.
      *
-     * @param  array $data Class dependencies.
-     * @throws InvalidArgumentException When no model factory is defined.
-     * @throws InvalidArgumentException When no collection loader is defined.
+     * @param  array<string, object> $data Class dependencies.
+     * @throws InvalidArgumentException If a dependency is missing.
      */
     public function __construct(array $data)
     {
-        if (!isset($data['model/collection/loader'])) {
-            throw new InvalidArgumentException('Collection Loader must be defined in the SitemapBuilder Service.');
+        if (!isset($data['base-url'])) {
+            throw new InvalidArgumentException('Sitemap Builder expected a Base URL');
         }
 
-        if (!isset($data['base-url'])) {
-            throw new InvalidArgumentException('Base URL must be defined in the SitemapBuilder Service.');
+        if (!isset($data['model/collection/loader'])) {
+            throw new InvalidArgumentException('Sitemap Builder expected a Collection Loader');
+        }
+
+        if (!isset($data['sitemap/presenter'])) {
+            throw new InvalidArgumentException('Sitemap Builder expected a Sitemap Presenter');
         }
 
         if (!isset($data['translator'])) {
-            throw new InvalidArgumentException('Translator must be defined in the SitemapBuilder Service.');
+            throw new InvalidArgumentException('Sitemap Builder expected a Translator');
         }
 
         if (!isset($data['view'])) {
-            throw new InvalidArgumentException('View must be defined in the SitemapBuilder Service.');
+            throw new InvalidArgumentException('Sitemap Builder expected a View Renderer');
         }
 
         $this->setBaseUrl($data['base-url']);
