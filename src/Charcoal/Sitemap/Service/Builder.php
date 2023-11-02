@@ -2,58 +2,76 @@
 
 namespace Charcoal\Sitemap\Service;
 
-use Charcoal\Factory\FactoryInterface;
 use Charcoal\Loader\CollectionLoader;
 use Charcoal\Object\RoutableInterface;
 use Charcoal\Translator\TranslatorAwareTrait;
-use Charcoal\View\ViewableInterface;
+use Charcoal\View\ViewInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 use Slim\Http\Uri;
+use Traversable;
 
 /**
  * Sitemap builder from object hierarchy
  *
- * classname:
- *    filters: array (charcoal-core doc)
- *    orders: array (charcoal-core doc)
- *    children: array (same as objects)
- *        condition: Parent condition (loop those children on a parent renderable condition)
+ * Most options within the objects range are renderable
+ * Options outsite the 'objects' will impact objects and
+ * can be overwriten for each.
+ *
+ * ```json
+ * {
+ *     'l10n': true, // Setting l10n mode
+ *     'objects': {
+ *         'boilerplate/object': {
+ *             'data': {
+ *                 'id': '{{id}}',
+ *                 'l10n': false // This object doesn't require l10n in that context
+ *             }
+ *         }
+ *     }
+ * }
+ * ```
  */
 class Builder
 {
     use TranslatorAwareTrait;
 
     /**
+     * Temporarily store, during build time, the object hierarchy options
+     * merged with the default sitemap options.
+     *
+     * @var array<string, mixed>
+     */
+    protected $buildSitemapOptions = [];
+
+    /**
      * @var UriInterface
      */
-    protected $baseUrl;
+    private $baseUrl;
 
     /**
-     * Store the factory instance.
-     *
-     * @var FactoryInterface
-     */
-    protected $modelFactory;
-
-    /**
-     * Object hierarchy as defined in the config.json
-     *
-     * @var array
-     */
-    private $objectHierarchy;
-
-    /**
-     * Store the factory instance.
+     * Store the collection loader instance.
      *
      * @var CollectionLoader
      */
     private $collectionLoader;
 
     /**
+     * Object hierarchy as defined in the config.json
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    private $objectHierarchy;
+
+    /**
      * @var SitemapPresenter
      */
     private $sitemapPresenter;
+
+    /**
+     * @var ViewInterface
+     */
+    private $view;
 
     /**
      * Create the Sitemap Builder.
@@ -64,10 +82,6 @@ class Builder
      */
     public function __construct(array $data)
     {
-        if (!isset($data['model/factory'])) {
-            throw new InvalidArgumentException('Model Factory must be defined in the SitemapBuilder Service.');
-        }
-
         if (!isset($data['model/collection/loader'])) {
             throw new InvalidArgumentException('Collection Loader must be defined in the SitemapBuilder Service.');
         }
@@ -80,37 +94,23 @@ class Builder
             throw new InvalidArgumentException('Translator must be defined in the SitemapBuilder Service.');
         }
 
+        if (!isset($data['view'])) {
+            throw new InvalidArgumentException('View must be defined in the SitemapBuilder Service.');
+        }
+
         $this->setBaseUrl($data['base-url']);
-        $this->setModelFactory($data['model/factory']);
         $this->setCollectionLoader($data['model/collection/loader']);
-        $this->setTranslator($data['translator']);
         $this->setSitemapPresenter($data['sitemap/presenter']);
+        $this->setTranslator($data['translator']);
+        $this->setView($data['view']);
     }
 
     /**
-     * Necessary options.
+     * Retrieves the default options for sitemap hierarchy.
      *
-     * Most options within the objects range are renderable
-     * Options outsite the 'objects' will impact objects and
-     * can be overwriten for each.
-     *
-     * ```json
-     * {
-     *     'l10n': true, // Setting l10n mode
-     *     'objects': {
-     *         'boilerplate/object': {
-     *             'data': {
-     *                 'id': '{{id}}',
-     *                 'l10n': false // This object doesn't require l10n in that context
-     *             }
-     *         }
-     *     }
-     * }
-     * ```
-     *
-     * @return array Renderable options.
+     * @return array<string, mixed>
      */
-    protected function defaultOptions()
+    protected function getDefaultSitemapOptions()
     {
         return [
             'locale'              => $this->translator()->getLocale(),
@@ -118,246 +118,270 @@ class Builder
             'check_active_routes' => true,
             'relative_urls'       => true,
             'transformer'         => null,
-            'objects'             => [
-                'label'    => '{{title}}',
-                'url'      => '{{url}}',
-                'children' => [],
-                'data'     => [],
-            ]
+            'objects'             => [],
+        ];
+    }
+
+    /**
+     * Retrieves the default options for a model collection.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getDefaultObjectOptions()
+    {
+        return [
+            'label' => '{{title}}',
+            'url'   => '{{url}}',
+        ];
+    }
+
+    /**
+     * Retrieves the default options for a model collection.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getCommonSitemapObjectOptionKeys()
+    {
+        return [
+            'locale',
+            'l10n',
+            'check_active_routes',
+            'relative_urls',
+            'transformer',
         ];
     }
 
     /**
      * Build the sitemap array.
      *
-     * @return array The actual sitemap.
+     * @return list<list<array<string, mixed>>> Lists of sitemap locations for the given hierarchy.
      */
     public function build($ident = 'default')
     {
-        $h = $this->objectHierarchy();
+        $maps = $this->objectHierarchy();
 
-        if (!$h) {
+        if (!$maps) {
             return [];
         }
 
-        if (!isset($h[$ident])) {
-            throw new InvalidArgumentException(strtr('Sitemap %ident not defined.', [
-                '%ident' => $ident
-            ]));
+        if (!isset($maps[$ident])) {
+            throw new InvalidArgumentException(sprintf('Sitemap [%s]: Hierarchy not defined', $ident));
         }
 
-        if (!isset($h[$ident]['objects'])) {
-            throw new InvalidArgumentException(strtr('No objects defined in %ident sitemap.', [
-                '%ident' => $ident
-            ]));
+        if (!isset($maps[$ident]['objects'])) {
+            throw new InvalidArgumentException(sprintf('Sitemap [%s]: No objects defined', $ident));
         }
 
-        $opts    = $h[$ident];
-        $objects = $opts['objects'];
+        $mapDefaults = $this->getDefaultSitemapOptions();
+        $objDefaults = $this->getDefaultObjectOptions();
 
-        $out = [];
+        $commonOptionKeys = $this->getCommonSitemapObjectOptionKeys();
 
-        $defaults = $this->defaultOptions();
+        $this->buildSitemapOptions = array_merge($mapDefaults, $maps[$ident]);
 
-        // Unnecessary for the following merge
-        unset($opts['objects']);
-        $defaults = array_merge($defaults, $opts);
+        $collections = [];
 
-        $objectOptions = $defaults['objects'];
-        foreach ($objects as $class => $options) {
-            $options = array_merge($objectOptions, $options);
+        foreach ($this->buildSitemapOptions['objects'] as $objType => $objOptions) {
+            $objOptions = array_merge($objDefaults, $objOptions);
 
-            if (!isset($options['l10n'])) {
-                $options['l10n'] = $defaults['l10n'];
+            foreach ($commonOptionKeys as $key) {
+                if (!isset($objOptions[$key]) && isset($this->buildSitemapOptions[$key])) {
+                    $objOptions[$key] = $this->buildSitemapOptions[$key];
+                }
             }
 
-            if (!isset($options['locale'])) {
-                $options['locale'] = $defaults['locale'];
+            $collection = $this->buildObject($objType, $objOptions);
+            if ($collection) {
+                $collections[] = $collection;
             }
-
-            if (!isset($options['check_active_routes'])) {
-                $options['check_active_routes'] = $defaults['check_active_routes'];
-            }
-
-            if (!isset($options['relative_urls'])) {
-                $options['relative_urls'] = $defaults['relative_urls'];
-            }
-
-            if (!isset($options['transformer'])) {
-                $options['transformer'] = $defaults['transformer'];
-            }
-
-            $out[] = $this->buildObject($class, $options);
         }
 
-        return $out;
+        $this->buildSitemapOptions = [];
+
+        return $collections;
     }
 
     /**
-     * Build object from the given hierarchy
+     * Build object collection from the given hierarchy.
      *
-     * @param  string            $class   Classname.
-     * @param  array             $options Associated options.
-     * @param  ViewableInterface $parent  Parent object to render on.
-     * @return array Local sitemap.
+     * @param  class-string         $objType    The object type to collect.
+     * @param  array<string, mixed> $objOptions The object's collection options.
+     * @param  array|object|null    $parentData The object's parent data presentation to filter by.
+     * @param  int                  $level      The current depth of the sitemap hierarchy.
+     * @return ?list<array<string, mixed>> List of sitemap locations for the given hierarchy.
      */
-    protected function buildObject($class, $options, ViewableInterface $parent = null, $level = 0)
+    protected function buildObject($objType, $objOptions, $parentData = null, $level = 0)
     {
         // If the render of a condition is false or empty, dont process the object.
-        if ($parent && isset($options['condition'])) {
-            if (!$parent->view()->render($options['condition'], $parent)) {
-                return [];
+        if ($parentData && isset($objOptions['condition'])) {
+            $result = $this->renderData($objOptions['condition'], $parentData);
+            if (!$result) {
+                return null;
             }
         }
 
-        // Loadin the actual objects from the predefined settings
-        $factory = $this->modelFactory();
-        $obj     = $factory->create($class);
+        $defaultLocale     = isset($objOptions['locale']) ? $objOptions['locale'] : $this->translator()->getLocale();
+        $l10n              = isset($objOptions['l10n']) ? $objOptions['l10n'] : true;
+        $checkActiveRoutes = isset($objOptions['check_active_routes']) ? $objOptions['check_active_routes'] : true;
+        $relativeUrls      = isset($objOptions['relative_urls']) ? $objOptions['relative_urls'] : true;
+        $transformer       = isset($objOptions['transformer']) ? $objOptions['transformer'] : null;
+        $availableLocales  = $l10n ? $this->translator()->availableLocales() : [ $defaultLocale ];
 
-        $loader = $this->collectionLoader()->setModel($obj);
+        $objDefaults       = $this->getDefaultObjectOptions();
+        $commonOptionKeys  = $this->getCommonSitemapObjectOptionKeys();
 
-        // From the filters
-        if (isset($options['filters'])) {
-            $filters = $options['filters'];
-            if ($parent) {
-                $filters = $this->renderData($parent, $filters, $options['transformer']);
+        $loader = $this->collectionLoader()->setModel($objType);
+
+        if (isset($objOptions['filters'])) {
+            $filters = $objOptions['filters'];
+            if ($parentData) {
+                $filters = $this->renderData($filters, $parentData);
             }
             $loader->addFilters($filters);
         }
 
-        // From the orders
-        if (isset($options['orders'])) {
-            $orders = $options['orders'];
-            if ($parent) {
-                $orders = $this->renderData($parent, $orders, $options['transformer']);
+        if (isset($objOptions['orders'])) {
+            $orders = $objOptions['orders'];
+            if ($parentData) {
+                $orders = $this->renderData($orders, $parentData);
             }
             $loader->addOrders($orders);
         }
 
-        // Loading
-        $list = $loader->load();
+        $objCollection = $loader->load();
 
-        // Processing the objects and rendering data
-        $out      = [];
-        $children = isset($options['children']) ? $options['children'] : [];
         $level++;
 
-        // Options
-        $l10n              = $options['l10n'];
-        $defaultLocale     = $options['locale'];
-        $checkActiveRoutes = $options['check_active_routes'];
-        $relativeUrls      = $options['relative_urls'];
-        $transformer       = $options['transformer'];
-
-        // Locales
-        $availableLocales = $l10n
-            ? $this->translator()->availableLocales()
-            : [ $defaultLocale ];
+        $links = [];
 
         foreach ($availableLocales as $locale) {
             // Get opposite languages locales
-            $oppositeLang = [];
-            foreach ($availableLocales as $l) {
-                if ($l === $locale) {
-                    continue;
+            $alternateLocales = [];
+            foreach ($availableLocales as $alternateLocale) {
+                if ($alternateLocale !== $locale) {
+                    $alternateLocales[] = $alternateLocale;
                 }
-                $oppositeLang[] = $l;
             }
 
             // Set the local to the current locale before looping the list.
             $this->translator()->setLocale($locale);
-            foreach ($list as $object) {
+            foreach ($objCollection as $object) {
                 // When checking active routes, do not display routes that are not active
                 if ($checkActiveRoutes && $object instanceof RoutableInterface && !$object->isActiveRoute()) {
                     continue;
                 }
 
+                $objData = $this->sitemapPresenter()->transform($object, $transformer);
+
                 // Hierarchical (children, when defined)
-                $cs = [];
-                if (!empty($children)) {
-                    foreach ($children as $cname => $opts) {
-                        $opts = array_merge($this->defaultOptions(), $opts);
-                        $cs[] = $this->buildObject($cname, $opts, $object, $level);
+                $children = [];
+                if (!empty($objOptions['children'])) {
+                    foreach ($objOptions['children'] as $childType => $childOptions) {
+                        $childOptions = array_merge($objDefaults, $childOptions);
+
+                        foreach ($commonOptionKeys as $key) {
+                            if (!isset($childOptions[$key]) && isset($this->buildSitemapOptions[$key])) {
+                                $childOptions[$key] = $this->buildSitemapOptions[$key];
+                            }
+                        }
+
+                        $collection = $this->buildObject($childType, $childOptions, $objData, $level);
+                        if ($collection) {
+                            $children[] = $collection;
+                        }
                     }
                 }
 
-                $url = $relativeUrls
-                    ? trim($this->renderData($object, $options['url'], $transformer))
-                    : $this->withBaseUrl(trim($this->renderData($object, $options['url'], $transformer)));
-                $tmp = [
-                    'label'    => trim($this->renderData($object, $options['label'], $transformer)),
+                $url = trim((string) $this->renderData($objOptions['url'], $objData));
+                if (!$relativeUrls) {
+                    $url = (string) $this->withBaseUrl($url);
+                }
+
+                $data = isset($objOptions['data'])
+                    ? $this->renderData($objOptions['data'], $objData)
+                    : [];
+
+                $link = [
+                    'label'    => trim($this->renderData($objOptions['label'], $objData)),
                     'url'      => $url,
-                    'children' => $cs,
-                    'data'     => $this->renderData($object, $options['data'], $transformer),
+                    'children' => $children,
+                    'data'     => $data,
                     'level'    => $level,
                     'lang'     => $locale,
                 ];
 
                 // If you need a priority, fix your own rules
                 $priority = '';
-                if (isset($options['priority']) && $options['priority']) {
-                    $priority = $this->renderData($object, (string)$options['priority'], $transformer);
+                if (isset($objOptions['priority']) && $objOptions['priority']) {
+                    $priority = $this->renderData((string)$objOptions['priority'], $objData);
                 }
-                $tmp['priority'] = $priority;
+                $link['priority'] = $priority;
 
                 // If you need a date of last modification, fix your own rules
                 $last = '';
-                if (isset($options['last_modified']) && $options['last_modified']) {
-                    $last = $this->renderData($object, $options['last_modified'], $transformer);
+                if (isset($objOptions['last_modified']) && $objOptions['last_modified']) {
+                    $last = $this->renderData($objOptions['last_modified'], $objData);
                 }
-                $tmp['last_modified'] = $last;
+                $link['last_modified'] = $last;
 
                 // Opposite Languages
                 // Meant to be alternate, thus the lack of data rendering
                 $alternates = [];
-                foreach ($oppositeLang as $ol) {
-                    $this->translator()->setLocale($ol);
+                foreach ($alternateLocales as $alternateLocale) {
+                    $this->translator()->setLocale($alternateLocale);
 
                     if ($checkActiveRoutes && $object instanceof RoutableInterface && !$object->isActiveRoute()) {
                         continue;
                     }
 
-                    $url = $relativeUrls
-                        ? trim($this->renderData($object, $options['url'], $transformer))
-                        : $this->withBaseUrl(trim($this->renderData($object, $options['url'], $transformer)));
+                    $url = trim((string) $this->renderData($objOptions['url'], $objData));
+                    if (!$relativeUrls) {
+                        $url = (string) $this->withBaseUrl($url);
+                    }
 
                     $alternates[] = [
                         'url'  => $url,
-                        'lang' => $ol,
+                        'lang' => $alternateLocale,
                     ];
                 }
 
-                $tmp['alternates'] = $alternates;
+                $link['alternates'] = $alternates;
 
                 $this->translator()->setLocale($locale);
-                $out[] = $tmp;
+
+                $links[] = $link;
             }
         }
 
-        return $out;
+        return $links;
     }
 
     /**
      * Recursive data renderer
      *
-     * @param  ViewableInterface $obj  Object to render on.
-     * @param  mixed             $data Pretty much anything to be rendered
-     * @return mixed Rendered data.
+     * @param  mixed             $data    The data to render.
+     * @param  array|object|null $context The render context.
+     * @return mixed The rendered data.
      */
-    protected function renderData(ViewableInterface $obj, $data, $transformer = null)
+    protected function renderData($data, $context = null)
     {
         if (is_scalar($data)) {
-            $presentedObject = $this->sitemapPresenter()->transform($obj, $transformer);
-            return $obj->view()->render($data, $presentedObject);
+            return $this->view()->renderTemplate($data, $context);
         }
 
-        if (is_array($data)) {
-            $out = [];
-            foreach ($data as $key => $content) {
-                $out[$key] = $this->renderData($obj, $content, $transformer);
+        if (is_array($data) || ($data instanceof Traversable)) {
+            $rendered = [];
+            foreach ($data as $key => $value) {
+                $rendered[$key] = $this->renderData($value, $context);
             }
-            return $out;
+            return $rendered;
         }
+
+        if (is_object($data) && method_exists($data, '__toString')) {
+            return $this->view()->renderTemplate((string) $data, $context);
+        }
+
+        return null;
     }
 
     /**
@@ -378,27 +402,6 @@ class Builder
     {
         $this->objectHierarchy = $hierarchy;
         return $this;
-    }
-
-    /**
-     * Retrieve the model factory.
-     *
-     * @return FactoryInterface
-     */
-    public function modelFactory()
-    {
-        return $this->modelFactory;
-    }
-
-    /**
-     * Set an model factory.
-     *
-     * @param  FactoryInterface $factory The factory to create models.
-     * @return void
-     */
-    protected function setModelFactory(FactoryInterface $factory)
-    {
-        $this->modelFactory = $factory;
     }
 
     /**
@@ -431,13 +434,35 @@ class Builder
     }
 
     /**
-     * @param SitemapPresenter $sitemapPresenter
+     * @param SitemapPresenter $presenter
      * @return Builder
      */
-    public function setSitemapPresenter(SitemapPresenter $sitemapPresenter)
+    public function setSitemapPresenter(SitemapPresenter $presenter)
     {
-        $this->sitemapPresenter = $sitemapPresenter;
+        $this->sitemapPresenter = $presenter;
         return $this;
+    }
+
+    /**
+     * Set the renderable view.
+     *
+     * @param ViewInterface|array $view The view instance to use to render.
+     * @return self
+     */
+    protected function setView(ViewInterface $view)
+    {
+        $this->view = $view;
+        return $this;
+    }
+
+    /**
+     * Retrieve the renderable view.
+     *
+     * @return ViewInterface
+     */
+    public function view()
+    {
+        return $this->view;
     }
 
     /**

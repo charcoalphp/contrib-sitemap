@@ -4,6 +4,7 @@ namespace Charcoal\Sitemap\Service;
 
 use ArrayAccess;
 use Charcoal\Cache\Facade\CachePoolFacade;
+use Charcoal\Model\ModelInterface;
 use Charcoal\Factory\FactoryInterface;
 use Charcoal\Translator\TranslatorAwareTrait;
 use InvalidArgumentException;
@@ -39,10 +40,9 @@ class SitemapPresenter
     protected $cacheFacade;
 
     /**
-     * @param FactoryInterface $transformerFactory The transformer factory.
-     * @param CachePoolFacade  $cacheFacade        The cache helper.
-     * @param string           $getterPattern      The string pattern to match string with.
-     *                                             Must have a single catch-block.
+     * @param array|Traversable|callable $transformer   The data-view transformation array (or Traversable) object.
+     * @param string                     $getterPattern The string pattern to match string with. Must have a single
+     *                                                  catch-block.
      */
     public function __construct($transformerFactory, $cacheFacade, $translator, $getterPattern = '~{{(\w*?)}}~')
     {
@@ -53,23 +53,43 @@ class SitemapPresenter
     }
 
     /**
-     * @param  mixed              $obj         The model or value object.
-     * @param  object|string|null $transformer The specific transformer to use.
+     * @param  object      $obj         The model or data object.
+     * @param  string|null $transformer The specific transformer to use.
+     * @throws InvalidArgumentException If the $obj or $transformer are invalid.
      * @return array Normalized data, suitable as presentation (view) layer
      */
     public function transform($obj, $transformer = null)
     {
-        if (!is_object($transformer)) {
-            $transformer = $this->getTransformerFactory()->create($transformer ?? $obj->objType());
+        $isModel = ($obj instanceof ModelInterface);
+
+        if (!$transformer) {
+            $transformer = $isModel ? $obj->objType() : get_class($obj);
         }
 
-        $key = sprintf(
-            '%s_%s_%s_%s',
-            get_class($transformer),
-            $obj->objType(),
-            $obj->id(),
-            $this->translator()->getLocale()
-        );
+        if (is_string($transformer)) {
+            $transformer = $this->getTransformerFactory()->create($transformer);
+        } elseif (!is_callable($transformer)) {
+            throw new InvalidArgumentException(
+                'Sitemap Presenter expected $transformer to be callable or a fully-qualified class name'
+            );
+        }
+
+        if ($isModel) {
+            $key = sprintf(
+                '%s_%s_%s_%s',
+                spl_object_hash($transformer),
+                $obj->objType(),
+                $obj->id(),
+                $this->translator()->getLocale(),
+            );
+        } else {
+            $key = sprintf(
+                '%s_%s_%s',
+                spl_object_hash($transformer),
+                spl_object_hash($obj),
+                $this->translator()->getLocale(),
+            );
+        }
 
         $that = $this;
 

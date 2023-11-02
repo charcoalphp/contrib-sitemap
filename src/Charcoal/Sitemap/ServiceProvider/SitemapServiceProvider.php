@@ -28,10 +28,10 @@ class SitemapServiceProvider implements ServiceProviderInterface
         $container['charcoal/sitemap/builder'] = function (Container $container) {
             $builder = new Builder([
                 'base-url'                => $container['base-url'],
-                'model/factory'           => $container['model/factory'],
                 'model/collection/loader' => $container['model/collection/loader'],
+                'sitemap/presenter'       => $container['sitemap/presenter'],
                 'translator'              => $container['translator'],
-                'sitemap/presenter'       => $container['sitemap/presenter']
+                'view'                    => $container['view'],
             ]);
 
             $config = $container['config'];
@@ -42,13 +42,13 @@ class SitemapServiceProvider implements ServiceProviderInterface
         };
 
         /**
-         * @param Container $container
-         * @return GenericPresenter
+         * @param  Container $container
+         * @return SitemapPresenter
          */
         $container['sitemap/presenter'] = function (Container $container) {
-            $transformerFactory = isset($container['transformer/factory']) ?
-                $container['transformer/factory'] :
-                $container['sitemap/transformer/factory'];
+            $transformerFactory = isset($container['transformer/factory'])
+                ? $container['transformer/factory']
+                : $container['sitemap/transformer/factory'];
 
             return new SitemapPresenter(
                 $transformerFactory,
@@ -56,11 +56,13 @@ class SitemapServiceProvider implements ServiceProviderInterface
                 $container['translator']
             );
         };
+
         /**
          * Generic transformer factory.
+         *
          * For a class name app/model/class, it will resolve to App/Transformer/Object/ClassTransformer
          *
-         * @param Container $container
+         * @param  Container $container
          * @return GenericFactory
          */
         $container['sitemap/transformer/factory'] = function (Container $container) {
