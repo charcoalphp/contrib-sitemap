@@ -1,67 +1,83 @@
 Charcoal Sitemap
 ================
 
-
 [![License][badge-license]](LICENSE)
 [![Build Status][badge-github]][github-actions]
 [![Latest Release][badge-release]][github-latest]
 [![Supported PHP Version][badge-php]](composer.json)
 
-
-
-A [Charcoal][charcoal/charcoal] service for generating a sitemap.
-
-
-
-## Table of Contents
-
--   [Installation](#installation)
-    -   [Dependencies](#dependencies)
--   [Service Provider](#service-provider)
-    -   [Services](#services)
--   [Configuration](#configuration)
--   [Usage](#usage)
-    -   [Using the builder](#using-the-builder)
-    -   [Sitemap.xml](#sitemap.xml)
--   [Development](#development)
-    -  [Development Dependencies](#development-dependencies)
-    -  [Coding Style](#coding-style)
--   [Credits](#credits)
--   [License](#license)
-
-
+A [Charcoal][charcoal/charcoal] package for generating a sitemap.
 
 ## Installation
 
-The preferred (and only supported) method is with Composer:
-
 ```shell
-$ composer require charcoal/contrib-sitemap
+composer require charcoal/contrib-sitemap
 ```
 
+### Setup
 
+For Charcoal projects, the package can be registered in two ways.
 
-### Dependencies
+#### Charcoal Module
 
-#### Required
+The Sitemap's module will register the service provider (see below) and
+the route (`/sitemap.xml`).
 
--   **[PHP 7.4+](https://php.net)**: _PHP 8_ is recommended.
--   **[charcoal/app]**: ^4.0
--   **[charcoal/core]**: ^4.0
--   **[charcoal/factory]**: ^4.0
--   **[charcoal/object]**: ^4.0
--   **[charcoal/translator]**: ^4.0
+The module can be registered from your configuration file:
 
+```json
+"modules": {
+    "charcoal/sitemap/sitemap": {}
+}
+```
 
+#### Charcoal Service Provider
 
-## Service Provider
+The Sitemap's service provider will register the necessary services (see below)
+for building a sitemap.
+
+The service provider can be registered from your configuration file:
+
+```json
+{
+    "service_providers": {
+        "charcoal/view/service-provider/view": {}
+    }
+}
+```
+
+To register a route from your configuration file:
+
+```json
+{
+    "routes": {
+        "actions": {
+            "sitemap.xml": {
+                "route": "/sitemap.xml",
+                "methods": [ "GET" ],
+                "controller": "charcoal/sitemap/action/sitemap"
+            }
+        }
+    }
+}
+```
+
+## Overview
+
+### Routes
+
+* **`GET /sitemap.xml`** — A route assigned to `Charcoal\Sitemap\Action\SitemapAction`.  
+  Used to serve the XML document.
 
 ### Services
 
-- **charcoal/sitemap/builder** Instance of `Charcoal\Sitemap\Service\Builder`.
-  Used to generate collections of links from the configured models.
-
-
+* **`charcoal/sitemap/builder`** — Instance of `Charcoal\Sitemap\Service\Builder`.  
+  Used to generate the collections of links from the configured models.
+* **`sitemap/presenter`** — Instance of `Charcoal\Sitemap\Service\SitemapPresenter`.  
+  Used to resolve model transformations.
+* **`sitemap/transformer/factory`** — Instance of `Charcoal\Factory\GenericFactory`
+  ([charcoal/factory]).  
+  Used to resolve object transformers from object types.
 
 ## Configuration
 
@@ -251,22 +267,12 @@ using the `l10n` option which will include all translations.
 }
 ```
 
-
-
 ## Usage
 
 ### Using the builder
 
-The builder returns only an array. You need to make your own conversation if you need
-another format.
-
-The Sitemap module will include all necessary service providers and set the route (sitemap.xml) directly. Include the module:
-
-```json
-"modules": {
-    "charcoal/sitemap/sitemap": {}
-}
-```
+The builder returns only an array. You need to make your own converter
+if you need another format.
 
 Given the settings above:
 
@@ -274,98 +280,41 @@ Given the settings above:
 $builder = $container['charcoal/sitemap/builder'];
 $sitemap = $builder->build('footer_sitemap'); // footer_sitemap is the ident of the settings you want.
 ```
-You can also use the `SitemapBuilderAwareTrait`, which includes the setter and getter for the sitemap builder, in order
-to use it with minimal code in every necessary class.
+You can also use the `SitemapBuilderAwareTrait`, which includes the setter and
+getter for the sitemap builder, in order to use it with minimal code in every
+necessary class.
 
+### XML Sitemap
 
-
-### Sitemap.xml
-
-This contrib provides a route for `sitemap.xml` that dynamically loads the `xml` config and outputs it 
-as an XML for crawlers to read.
-
-
+This package provides a route for `sitemap.xml` that dynamically loads
+the `xml` config and outputs it as an XML for crawlers to read.
 
 ## Development
 
 To install the development environment:
 
 ```shell
-$ composer install
+composer install
 ```
 
 To run the scripts (PHP lint, PHPCS, PHPStan, and PHPUnit):
 
 ```shell
-$ composer lint
-$ composer test
+composer lint
+composer test
 ```
-
-
-
-### API Documentation
-
--   The auto-generated `phpDocumentor` API documentation is available at:  
-    [https://charcoalphp.github.io/contrib-sitemap/docs/master/](https://charcoalphp.github.io/contrib-sitemap/docs/master/)
--   The auto-generated `apigen` API documentation is available at:  
-    [https://codedoc.pub/charcoal/contrib-sitemap/master/](https://codedoc.pub/charcoal/contrib-sitemap/master/index.html)
-
-
-
-### Development Dependencies
-
--   [php-coveralls/php-coveralls](https://packagist.org/packages/php-coveralls/php-coveralls)
--   [phpunit/phpunit](https://packagist.org/packages/phpunit/phpunit)
--   [squizlabs/php_codesniffer](https://packagist.org/packages/squizlabs/php_codesniffer)
-
-
-
-### Coding Style
-
-The charcoal/contrib-sitemap module follows the Charcoal coding-style:
-
--   [_PSR-1_][psr-1]
--   [_PSR-2_][psr-2]
--   [_PSR-4_][psr-4], autoloading is therefore provided by _Composer_.
--   [_phpDocumentor_](http://phpdoc.org/) comments.
--   [phpcs.xml.dist](phpcs.xml.dist) and [.editorconfig](.editorconfig) for coding standards.
-
-> Coding style validation / enforcement can be performed with `composer phpcs`. An auto-fixer is also available with `composer phpcbf`.
-
-
-
-## Credits
-
--   [Locomotive](https://locomotive.ca/)
-
-
 
 ## License
 
 Charcoal is licensed under the MIT license. See [LICENSE](LICENSE) for details.
 
+[charcoal/charcoal]: https://github.com/charcoalphp/charcoal
+[charcoal/factory]:  https://github.com/charcoalphp/factory
 
+[badge-github]:      https://img.shields.io/github/actions/workflow/status/charcoalphp/contrib-sitemap/ci.yml?branch=main
+[badge-license]:     https://poser.pugx.org/charcoal/contrib-sitemap/license
+[badge-php]:         https://img.shields.io/packagist/php-v/charcoal/charcoal?style=flat-square&logo=php
+[badge-release]:     https://img.shields.io/github/tag/charcoalphp/contrib-sitemap.svg
 
-[charcoal/contrib-sitemap]:  https://packagist.org/packages/charcoal/contrib-sitemap
-[charcoal/app]:              https://packagist.org/packages/charcoal/app
-[charcoal/charcoal]:         https://packagist.org/packages/charcoal/charcoal
-[charcoal/core]:             https://packagist.org/packages/charcoal/core
-[charcoal/factory]:          https://packagist.org/packages/charcoal/factory
-[charcoal/object]:           https://packagist.org/packages/charcoal/object
-[charcoal/translator]:       https://packagist.org/packages/charcoal/translator
-
-[badge-github]:    https://img.shields.io/github/actions/workflow/status/charcoalphp/contrib-sitemap/ci.yml?branch=main
-[badge-license]:   https://poser.pugx.org/charcoal/contrib-sitemap/license
-[badge-php]:       https://img.shields.io/packagist/php-v/charcoal/charcoal?style=flat-square&logo=php
-[badge-release]:   https://img.shields.io/github/tag/charcoalphp/contrib-sitemap.svg
-
-[github-actions]:  https://github.com/charcoalphp/contrib-sitemap/actions
-[github-latest]:   https://github.com/charcoalphp/contrib-sitemap/releases/latest
-
-[psr-1]:  https://www.php-fig.org/psr/psr-1/
-[psr-2]:  https://www.php-fig.org/psr/psr-2/
-[psr-3]:  https://www.php-fig.org/psr/psr-3/
-[psr-4]:  https://www.php-fig.org/psr/psr-4/
-[psr-6]:  https://www.php-fig.org/psr/psr-6/
-[psr-7]:  https://www.php-fig.org/psr/psr-7/
-[psr-11]: https://www.php-fig.org/psr/psr-11/
+[github-actions]:    https://github.com/charcoalphp/contrib-sitemap/actions
+[github-latest]:     https://github.com/charcoalphp/contrib-sitemap/releases/latest
