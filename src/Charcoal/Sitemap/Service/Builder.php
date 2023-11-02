@@ -138,7 +138,7 @@ class Builder
     /**
      * Retrieves the default options for a model collection.
      *
-     * @return array<string, mixed>
+     * @return list<string>
      */
     protected function getCommonSitemapObjectOptionKeys()
     {
@@ -444,9 +444,6 @@ class Builder
     }
 
     /**
-     * Set the renderable view.
-     *
-     * @param ViewInterface|array $view The view instance to use to render.
      * @return self
      */
     protected function setView(ViewInterface $view)

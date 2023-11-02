@@ -40,9 +40,8 @@ class SitemapPresenter
     protected $cacheFacade;
 
     /**
-     * @param array|Traversable|callable $transformer   The data-view transformation array (or Traversable) object.
-     * @param string                     $getterPattern The string pattern to match string with. Must have a single
-     *                                                  catch-block.
+     * @param string $getterPattern The string pattern to match string with.
+     *     Must have a single catch-block.
      */
     public function __construct($transformerFactory, $cacheFacade, $translator, $getterPattern = '~{{(\w*?)}}~')
     {
