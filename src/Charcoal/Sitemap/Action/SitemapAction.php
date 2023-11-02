@@ -20,6 +20,13 @@ class SitemapAction extends AbstractAction
     protected $baseUrl;
 
     /**
+     * The sitemap hierarchy to output.
+     *
+     * @var string|null
+     */
+    protected $sitemapIdent;
+
+    /**
      * The sitemap XML as a string.
      *
      * @var string|null
@@ -79,7 +86,7 @@ class SitemapAction extends AbstractAction
     {
         $this->setMode(self::MODE_XML);
 
-        $collections = $this->sitemapBuilder->build('xml');
+        $collections = $this->sitemapBuilder->build($this->sitemapIdent ?? 'xml');
         $this->sitemapXml = $this->createXmlFromCollections($collections);
 
         $this->setSuccess(true);

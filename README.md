@@ -55,12 +55,18 @@ To register a route from your configuration file:
             "sitemap.xml": {
                 "route": "/sitemap.xml",
                 "methods": [ "GET" ],
-                "controller": "charcoal/sitemap/action/sitemap"
+                "controller": "charcoal/sitemap/action/sitemap",
+                "action_data": {
+                    "sitemap_ident": "xml"
+                }
             }
         }
     }
 }
 ```
+
+By default, the action controller will look for a sitemap hierarchy named `xml`
+which can be changed via the `sitemap_ident` controller setting.
 
 ## Overview
 
@@ -280,14 +286,10 @@ Given the settings above:
 $builder = $container['charcoal/sitemap/builder'];
 $sitemap = $builder->build('footer_sitemap'); // footer_sitemap is the ident of the settings you want.
 ```
+
 You can also use the `SitemapBuilderAwareTrait`, which includes the setter and
 getter for the sitemap builder, in order to use it with minimal code in every
 necessary class.
-
-### XML Sitemap
-
-This package provides a route for `sitemap.xml` that dynamically loads
-the `xml` config and outputs it as an XML for crawlers to read.
 
 ## Development
 
