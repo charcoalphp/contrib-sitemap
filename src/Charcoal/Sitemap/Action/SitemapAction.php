@@ -50,6 +50,7 @@ class SitemapAction extends AbstractAction
      * @var array<string, string>
      */
     protected $xsiNamespaces = [
+        // phpcs:ignore Generic.Files.LineLength.TooLong
         'schemaLocation' => 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd',
     ];
 
