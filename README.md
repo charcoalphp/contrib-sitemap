@@ -41,7 +41,7 @@ The service provider can be registered from your configuration file:
 ```json
 {
     "service_providers": {
-        "charcoal/view/service-provider/view": {}
+        "charcoal/sitemap/service-provider/sitemap": {}
     }
 }
 ```
@@ -68,17 +68,54 @@ To register a route from your configuration file:
 By default, the action controller will look for a sitemap hierarchy named `xml`
 which can be changed via the `sitemap_ident` controller setting.
 
+### Admin (static file generation)
+
+To generate a static `www/sitemap.xml` from the back-end system menu, include
+the package's admin config and JavaScript:
+
+```php
+$config->addFile(\Charcoal\Sitemap\SitemapModule::ADMIN_CONFIG);
+```
+
+```json
+{
+    "assets": {
+        "collections": {
+            "js": {
+                "files": [
+                    "vendor/charcoal/contrib-sitemap/assets/scripts/contrib-sitemap.js"
+                ]
+            }
+        }
+    }
+}
+```
+
+You can also generate the file from the CLI:
+
+```shell
+vendor/bin/charcoal sitemap/generate
+```
+
+It is recommended to add a cron job to regenerate the file so search engines
+do not receive an outdated sitemap.
+
 ## Overview
 
 ### Routes
 
 * **`GET /sitemap.xml`** — A route assigned to `Charcoal\Sitemap\Action\SitemapAction`.  
-  Used to serve the XML document.
+  Used to serve the XML document dynamically.
+* **`GET /sitemap/generate`** (CLI) — A route assigned to
+  `Charcoal\Sitemap\Script\GenerateSitemapScript`.  
+  Writes a static `www/sitemap.xml` file (`vendor/bin/charcoal sitemap/generate`).
 
 ### Services
 
 * **`charcoal/sitemap/builder`** — Instance of `Charcoal\Sitemap\Service\Builder`.  
   Used to generate the collections of links from the configured models.
+* **`charcoal/sitemap/generator`** — Instance of `Charcoal\Sitemap\Service\SitemapGenerator`.  
+  Builds the default `xml` hierarchy and formats it as an XML document.
 * **`sitemap/formatter/xml`** — Instance of `Charcoal\Sitemap\Service\XmlFormatter`.  
   Used to generate the XML from one or more collections of links from the `Builder`.
 * **`sitemap/presenter`** — Instance of `Charcoal\Sitemap\Service\SitemapPresenter`.  
@@ -305,6 +342,16 @@ $links   = $builder->build('footer_sitemap');
 
 $formatter = $container['sitemap/formatter/xml'];
 $sitemap   = $formatter->createXmlFromCollections($links);
+```
+
+### Static sitemap.xml
+
+The `SitemapGenerator` service builds the default `xml` hierarchy and formats
+it as XML. It is used by the CLI script and the admin generate action:
+
+```php
+$generator = $container['charcoal/sitemap/generator'];
+$sitemap   = $generator->generate();
 ```
 
 ## Development
