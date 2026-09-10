@@ -7,6 +7,7 @@ use Charcoal\Sitemap\Service\Builder;
 use Charcoal\Sitemap\Service\SitemapGenerator;
 use Charcoal\Sitemap\Service\SitemapPresenter;
 use Charcoal\Sitemap\Service\XmlFormatter;
+use Charcoal\Sitemap\Transformer\RoutableTransformer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -94,6 +95,7 @@ class SitemapServiceProvider implements ServiceProviderInterface
                     'container' => $container,
                     'logger'    => $container['logger'],
                 ],
+                "default_class" => RoutableTransformer::class,
                 'resolver_options' => [
                     'suffix'       => 'Transformer',
                     'replacements' => [
