@@ -95,7 +95,7 @@ class SitemapServiceProvider implements ServiceProviderInterface
                     'container' => $container,
                     'logger'    => $container['logger'],
                 ],
-                "default_class" => RoutableTransformer::class,
+                'default_class' => RoutableTransformer::class,
                 'resolver_options' => [
                     'suffix'       => 'Transformer',
                     'replacements' => [
